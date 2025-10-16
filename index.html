@@ -10,7 +10,6 @@
   <meta property="fc:frame:image" content="https://bargss.me/cover.png" />
   <meta property="fc:frame:button:1" content="Vote YES" />
   <meta property="fc:frame:button:2" content="Vote NO" />
-  <meta property="fc:frame:post_url" content="https://bargss.me/api/vote" />
   <meta property="og:title" content="$EGGS Sentiment Vote" />
   <meta property="og:description" content="Is $EGGS Bullish or Bearish? Vote below 👇" />
 
@@ -40,18 +39,15 @@
     <h1>What’s your $EGGS prediction?</h1>
     <p class="sub">$EGGS community—what do you think? Vote to show your sentiment!</p>
 
-    <!-- First row -->
     <div class="buttons">
       <button id="btnBull" class="bull">🐂 Bullish</button>
       <button id="btnBear" class="bear">🐻 Bearish</button>
     </div>
 
-    <!-- Vote counters -->
     <div class="counter">
       Bullish: <span id="bullCount">0</span> | Bearish: <span id="bearCount">0</span> | Total: <span id="totalCount">0</span>
     </div>
 
-    <!-- Second row (new buttons) -->
     <div class="buttons">
       <button onclick="window.open('https://farcaster.xyz/~/channel/eggsfun','_blank')" class="btn-secondary">Follow eggsfun</button>
       <button onclick="window.open('https://farcaster.xyz/bargs','_blank')" class="btn-secondary">Follow bargs</button>
@@ -77,32 +73,30 @@
   const bearCountEl = document.getElementById('bearCount');
   const totalCountEl = document.getElementById('totalCount');
 
-  // Load saved counts
-  let bullCount = parseInt(localStorage.getItem('bullCount')||0);
-  let bearCount = parseInt(localStorage.getItem('bearCount')||0);
+  // بارگذاری آرا از localStorage
+  let bullCount = parseInt(localStorage.getItem('bullCount') || 0);
+  let bearCount = parseInt(localStorage.getItem('bearCount') || 0);
   bullCountEl.textContent = bullCount;
   bearCountEl.textContent = bearCount;
   totalCountEl.textContent = bullCount + bearCount;
 
-  async function onVote(choice){
-    btnBull.disabled = true; 
+  function onVote(choice){
+    btnBull.disabled = true;
     btnBear.disabled = true;
     thanks.style.display = 'block';
 
-    if(choice === 'bullish') bullCount++; 
+    if(choice === 'bullish') bullCount++;
     if(choice === 'bearish') bearCount++;
 
-    // Update counters in UI
+    // بروزرسانی UI
     bullCountEl.textContent = bullCount;
     bearCountEl.textContent = bearCount;
     totalCountEl.textContent = bullCount + bearCount;
 
-    // Save vote + counts locally
-    try { 
-      localStorage.setItem('eggs_vote', choice); 
-      localStorage.setItem('bullCount', bullCount);
-      localStorage.setItem('bearCount', bearCount);
-    } catch(e){}
+    // ذخیره در localStorage
+    localStorage.setItem('eggs_vote', choice);
+    localStorage.setItem('bullCount', bullCount);
+    localStorage.setItem('bearCount', bearCount);
 
     setTimeout(()=>{ thanks.style.display = 'none'; }, 2200);
   }
@@ -115,9 +109,7 @@
       await navigator.clipboard.writeText(location.href);
       copyBtn.textContent = 'Copied!';
       setTimeout(()=> copyBtn.textContent = 'Copy frame link', 1500);
-    } catch(e){
-      alert('Copy failed — copy URL manually.');
-    }
+    } catch(e){ alert('Copy failed — copy URL manually.'); }
   });
 
   openShare.addEventListener('click', ()=>{
@@ -126,10 +118,10 @@
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   });
 
-  // Disable buttons if already voted
+  // غیر فعال کردن دکمه‌ها اگر قبلا رای داده شده
   try {
     const v = localStorage.getItem('eggs_vote');
-    if(v){ btnBull.disabled=true; btnBear.disabled=true; }
+    if(v){ btnBull.disabled = true; btnBear.disabled = true; }
   } catch(e){}
 </script>
 </body>
