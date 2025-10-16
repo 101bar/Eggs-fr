@@ -1,30 +1,16 @@
 <!doctype html>
-<html>
-<head>
-  <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EGGS Frame</title>
-
-    <!-- 👇 این‌ها را اضافه کن -->
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://bargss.me/cover.png" />
-    <meta property="fc:frame:button:1" content="Vote YES" />
-    <meta property="fc:frame:button:2" content="Vote NO" />
-    <meta property="fc:frame:post_url" content="https://bargss.me/api/vote" />
-  </head>
-  <body>
-    <h1>Welcome to EGGS Frame</h1>
-  </body>
-</html>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>$EGGS — Vote</title>
 
   <!-- Farcaster frame meta -->
-  <meta name="fc:frame" content="vNext" />
+  <meta property="fc:frame" content="vNext" />
+  <meta property="fc:frame:image" content="https://bargss.me/cover.png" />
+  <meta property="fc:frame:button:1" content="Vote YES" />
+  <meta property="fc:frame:button:2" content="Vote NO" />
+  <meta property="fc:frame:post_url" content="https://bargss.me/api/vote" />
   <meta property="og:title" content="$EGGS Sentiment Vote" />
   <meta property="og:description" content="Is $EGGS Bullish or Bearish? Vote below 👇" />
 
@@ -46,6 +32,7 @@
     .credit{margin-top:12px;font-size:12px;color:var(--muted);text-align:center}
     .share{display:flex;gap:8px;justify-content:center;margin-top:10px}
     .smallbtn{padding:8px 10px;border-radius:8px;border:0;background:#101826;color:#fff;cursor:pointer}
+    .counter{margin-top:10px;text-align:center;font-weight:700;color:var(--accent);}
   </style>
 </head>
 <body>
@@ -57,6 +44,11 @@
     <div class="buttons">
       <button id="btnBull" class="bull">🐂 Bullish</button>
       <button id="btnBear" class="bear">🐻 Bearish</button>
+    </div>
+
+    <!-- Vote counters -->
+    <div class="counter">
+      Bullish: <span id="bullCount">0</span> | Bearish: <span id="bearCount">0</span> | Total: <span id="totalCount">0</span>
     </div>
 
     <!-- Second row (new buttons) -->
@@ -81,11 +73,37 @@
   const thanks = document.getElementById('thanks');
   const copyBtn = document.getElementById('copyLink');
   const openShare = document.getElementById('openShare');
+  const bullCountEl = document.getElementById('bullCount');
+  const bearCountEl = document.getElementById('bearCount');
+  const totalCountEl = document.getElementById('totalCount');
+
+  // Load saved counts
+  let bullCount = parseInt(localStorage.getItem('bullCount')||0);
+  let bearCount = parseInt(localStorage.getItem('bearCount')||0);
+  bullCountEl.textContent = bullCount;
+  bearCountEl.textContent = bearCount;
+  totalCountEl.textContent = bullCount + bearCount;
 
   async function onVote(choice){
-    btnBull.disabled = true; btnBear.disabled = true;
+    btnBull.disabled = true; 
+    btnBear.disabled = true;
     thanks.style.display = 'block';
-    try { localStorage.setItem('eggs_vote', choice); } catch(e){}
+
+    if(choice === 'bullish') bullCount++; 
+    if(choice === 'bearish') bearCount++;
+
+    // Update counters in UI
+    bullCountEl.textContent = bullCount;
+    bearCountEl.textContent = bearCount;
+    totalCountEl.textContent = bullCount + bearCount;
+
+    // Save vote + counts locally
+    try { 
+      localStorage.setItem('eggs_vote', choice); 
+      localStorage.setItem('bullCount', bullCount);
+      localStorage.setItem('bearCount', bearCount);
+    } catch(e){}
+
     setTimeout(()=>{ thanks.style.display = 'none'; }, 2200);
   }
 
@@ -108,6 +126,7 @@
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   });
 
+  // Disable buttons if already voted
   try {
     const v = localStorage.getItem('eggs_vote');
     if(v){ btnBull.disabled=true; btnBear.disabled=true; }
